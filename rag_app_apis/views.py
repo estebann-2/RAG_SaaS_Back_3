@@ -11,44 +11,6 @@ import logging
 
 
 # Upload Document API
-# class UploadDocumentView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request):
-#         if 'document' not in request.FILES:
-#             return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         uploaded_file = request.FILES["document"]
-#         document_name = uploaded_file.name.split('.')[0]  # Extract filename
-
-#         # Create conversation
-#         conversation = APIConversation.objects.create(user=request.user, title=document_name)
-
-#         # Save document
-#         document = APIDocument.objects.create(
-#             user=request.user,
-#             file=uploaded_file,
-#             title=document_name,
-#             conversation=conversation
-#         )
-
-#         # Process document asynchronously
-#         process_document(document)
-
-#         # Save system message
-#         APIMessage.objects.create(
-#             conversation=conversation,
-#             sender=request.user,
-#             text=f"Documento '{document_name}' procesado y listo para consultas."
-#         )
-
-#         return Response({
-#             "success": True,
-#             "response": f"Documento '{document_name}' subido y procesado.",
-#             "conversation_id": conversation.id
-#         }, status=status.HTTP_201_CREATED)
-
-# Upload Document API
 class UploadDocumentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -97,15 +59,6 @@ class UploadDocumentView(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
-# List Conversation History API
-# class ConversationHistoryView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get(self, request):
-#         conversations = APIConversation.objects.filter(user=request.user).order_by("-created_at")
-#         serializer = ConversationSerializer(conversations, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
 class ConversationHistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -125,50 +78,6 @@ class ConversationHistoryView(APIView):
         conversations = APIConversation.objects.filter(user=user).order_by("-created_at")
         serializer = ConversationSerializer(conversations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-# Send Message API
-# class SendMessageView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def post(self, request, conversation_id):
-#         conversation = get_object_or_404(APIConversation, id=conversation_id, user=request.user)
-
-#         user_message = request.data.get("message")
-#         if not user_message:
-#             return Response({"error": "Message cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Save user message
-#         message = APIMessage.objects.create(
-#             conversation=conversation,
-#             sender=request.user,
-#             role="user",
-#             text=user_message
-#         )
-
-#         # Retrieve relevant chunks
-#         relevant_chunks = retrieve_relevant_chunks(user_message, conversation, top_k=3)
-
-#         # Format prompt
-#         context_text = "\n\n".join([f"Document: {c['document']}\nChunk {c['chunk_id']}:\n{c['content']}" for c in relevant_chunks])
-#         prompt = f"Context:\n{context_text}\n\nUser Query: {user_message}"
-
-#         # Query LLM
-#         llm_response = query_llm(prompt)
-
-#         # Save LLM response
-#         assistant_message = APIMessage.objects.create(
-#             conversation=conversation,
-#             sender=request.user,
-#             role="assistant",
-#             text=llm_response
-#         )
-
-#         return Response({
-#             "user_message": message.text,
-#             "assistant_response": assistant_message.text
-#         }, status=status.HTTP_200_OK)
 
 
 class SendMessageView(APIView):
