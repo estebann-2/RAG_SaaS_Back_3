@@ -20,8 +20,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# OpenAI API Key
-OPENAI_API_KEY = "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"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -68,7 +66,6 @@ MIDDLEWARE = [
 CORS_ALLOW_CREDENTIALS = True  
 
 CORS_ALLOW_ALL_ORIGINS = True 
-
 ROOT_URLCONF = 'RAG_SaaS.urls'
 
 TEMPLATES = [

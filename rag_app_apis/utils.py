@@ -10,7 +10,6 @@ import tracemalloc
 from concurrent.futures import ThreadPoolExecutor
 from .models import APIChunk
 from docx import Document
-from django.conf import settings
 
 # Configurar logging
 logging.basicConfig(
@@ -20,10 +19,7 @@ logging.basicConfig(
 )
 
 # Inicializar embeddings de OpenAI
-embedding_model = OpenAIEmbeddings(
-    model="text-embedding-3-small",
-    openai_api_key=settings.OPENAI_API_KEY
-)
+embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
 
 # Definir chunking más eficiente
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=2000)
@@ -153,12 +149,8 @@ def process_document(document):
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import SystemMessage, HumanMessage
 
-# Initialize LLM with API key from settings
-llm = ChatOpenAI(
-    model="gpt-4-turbo-preview",
-    temperature=0.7,
-    openai_api_key=settings.OPENAI_API_KEY
-)
+# Initialize LLM
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
 
 def query_llm(user_input):
     """Handles sending a query to the LLM and returning a response."""
