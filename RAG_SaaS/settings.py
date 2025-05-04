@@ -180,7 +180,7 @@ GCP_CREDENTIALS = {
     "type": "service_account",
     "project_id": GCP_PROJECT_ID,
     "private_key_id": os.getenv("GCP_PRIVATE_KEY_ID"),
-    "private_key": os.getenv("GCP_PRIVATE_KEY").replace('\\n', '\n').strip('"') if os.getenv("GCP_PRIVATE_KEY") else None,
+    "private_key": os.getenv("GCP_PRIVATE_KEY").replace('\\n', '\n') if os.getenv("GCP_PRIVATE_KEY") else None,
     "client_email": os.getenv("GCP_CLIENT_EMAIL"),
     "client_id": os.getenv("GCP_CLIENT_ID"),
     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
