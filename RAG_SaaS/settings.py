@@ -21,7 +21,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # OpenAI API Key
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
