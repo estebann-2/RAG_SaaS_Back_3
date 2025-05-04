@@ -171,3 +171,4 @@ LOGIN_URL = '/login/'  # Redirects to your defined login page
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Usamos Redis como broker
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
