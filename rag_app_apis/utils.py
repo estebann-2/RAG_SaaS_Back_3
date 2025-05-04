@@ -62,45 +62,55 @@ def try_utf8_read(file_path):
         with open(file_path, "r", encoding=encoding, errors="replace") as f:
             return f.read().strip(), encoding
 
-def extract_text(file_path):
-    """Extracts text based on file type."""
-    file_ext = os.path.splitext(file_path)[1].lower()
-
+def extract_text(file_obj):
+    """Extracts text from a file stored in Google Cloud Storage."""
     try:
-        if file_ext == ".pdf":
-            logging.info(f"Extracting text from PDF: {file_path}")
-            text = ""
-            with fitz.open(file_path) as pdf_document:
-                for page in pdf_document:
-                    text += page.get_text("text")
-            return text.strip()
+        file_name = file_obj.name.lower()
+        file_ext = os.path.splitext(file_name)[1]
 
-        elif file_ext in [".docx"]:
-            logging.info(f"Extracting text from Word document: {file_path}")
-            doc = Document(file_path)
-            return "\n".join([para.text for para in doc.paragraphs]).strip()
+        # Create a temporary file to download the content
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix=file_ext) as temp_file:
+            # Download the file content from GCS
+            if hasattr(file_obj, 'file'):
+                temp_file.write(file_obj.file.read())
+            else:
+                temp_file.write(file_obj.read())
+            temp_file.flush()
 
-        elif file_ext == ".txt":
-            logging.info(f"Reading text file: {file_path}")
-            return try_utf8_read(file_path)[0]
+            if file_ext == '.pdf':
+                logging.info(f"Extracting text from PDF: {file_name}")
+                text = ""
+                with fitz.open(temp_file.name) as pdf_document:
+                    for page in pdf_document:
+                        text += page.get_text("text")
+                return text.strip()
 
-        else:
-            logging.warning(f"Unsupported file type: {file_ext}")
-            return None
+            elif file_ext == '.docx':
+                logging.info(f"Extracting text from Word document: {file_name}")
+                doc = Document(temp_file.name)
+                return "\n".join([para.text for para in doc.paragraphs]).strip()
+
+            elif file_ext == '.txt':
+                logging.info(f"Reading text file: {file_name}")
+                return temp_file.read().decode('utf-8', errors='replace').strip()
+
+            else:
+                logging.warning(f"Unsupported file type: {file_ext}")
+                return None
 
     except Exception as e:
-        logging.error(f"Error extracting text from {file_path}: {e}", exc_info=True)
+        logging.error(f"Error extracting text from {file_name}: {e}", exc_info=True)
         return None
 
 def process_document(document):
     """Procesa un documento: lectura, chunking, embedding y almacenamiento."""
     try:
         print("Iniciando procesamiento del documento...")
-        file_path = document.file.path
-        logging.info(f"Procesando documento: {document.title} ({file_path})")
+        logging.info(f"Procesando documento: {document.title}")
 
-        # Extraer texto del documento
-        text = extract_text(file_path)
+        # Extract text from the document using the file object directly
+        text = extract_text(document.file)
 
         if not text or len(text.strip()) == 0:
             logging.warning(f"Documento '{document.title}' no tiene contenido legible.")

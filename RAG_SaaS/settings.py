@@ -92,10 +92,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'rag_saas_back',
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'USER': 'uniandes',
+        'PASSWORD': 'IlzjpcP]y5qC.0va',
+        'HOST': '34.70.33.208',
+        'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',
         },
@@ -171,3 +171,21 @@ LOGIN_URL = '/login/'  # Redirects to your defined login page
 CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Usamos Redis como broker
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+# Google Cloud Storage settings
+DEFAULT_FILE_STORAGE = 'rag_app_apis.storage.UniqueFilenameGoogleCloudStorage'
+GCP_BUCKET_NAME = 'rag-saas-archives'
+GCP_PROJECT_ID = 'uniandes-452002'
+GCP_CREDENTIALS = {
+    "type": "service_account",
+    "project_id": GCP_PROJECT_ID,
+    "private_key_id": os.getenv("GCP_PRIVATE_KEY_ID"),
+    "private_key": os.getenv("GCP_PRIVATE_KEY").replace('\\n', '\n') if os.getenv("GCP_PRIVATE_KEY") else None,
+    "client_email": os.getenv("GCP_CLIENT_EMAIL"),
+    "client_id": os.getenv("GCP_CLIENT_ID"),
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": os.getenv("GCP_CLIENT_X509_CERT_URL"),
+    "universe_domain": "googleapis.com"
+}

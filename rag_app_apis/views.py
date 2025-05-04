@@ -19,7 +19,7 @@ class UploadDocumentView(APIView):
             return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         uploaded_file = request.FILES["document"]
-        document_name = uploaded_file.name.split('.')[0]  # Extract filename
+        document_name = uploaded_file.name
 
         # Get user ID from the request body
         user_id = request.data.get("user")
@@ -32,13 +32,13 @@ class UploadDocumentView(APIView):
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # Create conversation
-        conversation = APIConversation.objects.create(user=user, title=document_name)
+        conversation = APIConversation.objects.create(user=user, title=document_name.split('.')[0])
 
-        # Save document
+        # Save document using the storage backend (GCS)
         document = APIDocument.objects.create(
             user=user,
-            file=uploaded_file,
-            title=document_name,
+            file=uploaded_file,  # This will use the configured storage backend
+            title=document_name.split('.')[0],
             conversation=conversation
         )
 
@@ -55,7 +55,8 @@ class UploadDocumentView(APIView):
         return Response({
             "success": True,
             "response": f"Documento '{document_name}' subido y procesado.",
-            "conversation_id": conversation.id
+            "conversation_id": conversation.id,
+            "file_url": document.file.url  # Now returns the GCS URL
         }, status=status.HTTP_201_CREATED)
 
 
